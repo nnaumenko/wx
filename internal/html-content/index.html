@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <meta charset=utf-8>
+    <title>JSON REST API weather service</title>
+</head>
+
+<body>
+    <h1>Description</h1>
+    <p>This is an experimental JSON REST API providing METAR and TAF weather data.</p>
+    <p>Currently provides only raw (undecoded) METARs and TAFs.</p>
+    <p>See <a href="/help" target=new>API help</a> for quick intro or <a href="https://app.swaggerhub.com/apis/nnaumenko/wx.void.fo/0.1" target=new>Swagger</a> for details.</p>
+    <h1>Examples</h1>
+    <h2>Single ICAO location code</h2>
+    <p><a href="/metar/UKLL" target=new>/metar/UKLL</a> : get METAR.</p>
+    <p><a href="/taf/UKLL" target=new>/taf/UKLL</a> : get TAF.</p>
+    <p><a href="/location/UKLL" target=new>/location/UKLL</a> : get location data.</p>
+    <p><a href="/all/UKLL" target=new>/all/UKLL</a> : get all available data.</p>
+    <h2>Multiple ICAO location codes</h2>
+    <p><a href="/metar?location=UKLL,UKLI,NZSP" target=new>/metar?location=UKLL,UKLI,NZSP</a> : get METAR.</p>
+    <p><a href="/taf?location=UKLL,UKLI,NZSP" target=new>/taf?location=UKLL,UKLI,NZSP</a> : get TAF.</p>
+    <p><a href="/location?location=UKLL,UKLI,NZSP" target=new>/location?location=UKLL,UKLI,NZSP</a> : get location data.</p>
+    <p><a href="/all?location=UKLL,UKLI,NZSP" target=new>/all?location=UKLL,UKLI,NZSP</a> : get all available data.</p>
+</body>
+</html>

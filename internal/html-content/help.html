@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <meta charset=utf-8>
+    <title>API Help</title>
+</head>
+
+<body>
+    <a name=purpose></a>
+    <h1>Purpose</h1>
+    <p>The purpose is to provide REST JSON API for obtaining METAR weather reports, TAF weather forecasts, and weather
+        station info.</p>
+
+    <a name=http_methods></a>
+    <h1>HTTP Methods</h1>
+    <p>API is read-only. Only GET, HEAD and OPTIONS methods are allowed.</p>
+    
+    <a name=endpoints></a>
+    <h1>Endpoints</h1>
+    <ul>
+        <li>/metar : current METAR for a location</li>
+        <li>/taf : current TAF for a location</li>
+        <li>/location : information about a location</li>
+        <li>/all : actual METAR and TAF along with location info</li>
+    </ul>
+
+    <a name=parameters></a>
+    <h1>Parameters</h1>
+    <p>To request the data for a single station, append ICAO location code to endpoint. For example try:</p>
+    <ul>
+        <li><a href="/metar/UKLL" target=new>/metar/UKLL</a> to get current METAR</li>
+        <li><a href="/taf/UKLL" target=new>/taf/UKLL</a> to get current TAF</li>
+        <li><a href="/location/UKLL" target=new>/location/UKLL</a> to get location information</li>
+        <li><a href="/all/UKLL" target=new>/all/UKLL</a> to get all of the above in a single response</li>
+    </ul>
+    <p>To request the data for multiple stations, use endpoint with 'location' parameter. 'Location' parameter must
+        contain comma-separated list of ICAO location codes. For example try:</p>
+    <ul>
+        <li><a href="/metar?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD"
+                target=new>/metar?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD</a> to get current METARs</li>
+        <li><a href="/taf?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD"
+                target=new>/taf?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD</a> to get current TAFs</li>
+        <li><a href="/location?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD"
+                target=new>/location?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD</a> to get location info</li>
+        <li><a href="/all?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD"
+                target=new>/all?location=NZSP,NZTB,NZPG,NZFX,SCRM,NZWD</a> to get all of the above in a single response
+        </li>
+    </ul>
+
+    <a name=icao_location_code></a>
+    <h1>ICAO location code</h1>
+    <p>A valid <a href="https://en.wikipedia.org/wiki/ICAO_airport_code" target=new>ICAO location code</a> is a string
+        which contains exactly four characters. First character must be a capitalised latin letter (A-Z). Remaining
+        three characters must be either capitalised latin letters or numbers (A-Z or 0-9).</p>
+    <p>The examples of correct ICAO codes are <a
+            href="https://en.wikipedia.org/wiki/Lviv_Danylo_Halytskyi_International_Airport" target=new>UKLL</a> or <a
+            href="https://en.wikipedia.org/wiki/Jack_F._Paulus_Skiway" target=new>NZSP</a>.</p>
+    <p>Request with one or more invalid ICAO location codes is not accepted by API, for example try <a
+            href="/all/UKLLL" target=new>/all/UKLLL</a> or <a href="/all?location=UKLL,1KLL"
+            target=new>/all?location=UKLL,1KLL</a>.</p>
+
+    <a name=response_format></a>
+    <h1>Response format</h1>
+    <h2>METAR</h2>
+    <p>Endpoint /metar serves JSON objects with the following fields</p>
+    <ul>
+        <li>location: string holding ICAO location code</li>
+        <li>metar: string holding raw METAR report or null if no recent METAR report is found</li>
+    </ul>
+    <h2>TAF</h2>
+    <p>Endpoint /taf is similar to /metar. It serves JSON objects with the following fields</p>
+    <ul>
+        <li>location: string holding ICAO location code</li>
+        <li>taf: string holding raw TAF report or null if no active TAF report is found</li>
+    </ul>
+    <h2>Location Info</h2>
+    <p>Endpoint /location serves JSON objects with the following fields</p>
+    <ul>
+        <li>location: string holding ICAO location code</li>
+        <li>name: string holding location name, usually airport name</li>
+        <li>city: string holding name of town, city, installation, etc. associated with the location</li>
+        <li>country_code: two-letter country code as per <a href="https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes">ISO 3166-1</a></li>
+        <li>latitude: floating-point value for latitude in <a href="https://en.wikipedia.org/wiki/Decimal_degrees">Decimal Degrees</a></li>
+        <li>longitude: floating-point value for longitude in <a href="https://en.wikipedia.org/wiki/Decimal_degrees">Decimal Degrees</a></li>
+        <li>altitude_meters: integer value for altidue above mean sea level in meters</li>
+        <li>altitude_feet: integer value for altidue above mean sea level in feet</li>
+    </ul>
+    <h2>All Info</h2>
+    <p>Endpoint /all serves JSON objects with a combination of all fields above.</p>
+</body>
+</html>
