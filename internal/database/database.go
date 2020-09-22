@@ -90,16 +90,16 @@ type DbRedis struct {
 }
 
 const (
-	DbRedisICAOPrefixLocation = "wx:icao:loc:"
-	DbRedisICAOPrefixMetar    = "wx:icao:metar:"
-	DbRedisICAOPrefixTaf      = "wx:icao:taf:"
+	dbRedisICAOPrefixLocation = "wx:icao:loc:"
+	dbRedisICAOPrefixMetar    = "wx:icao:metar:"
+	dbRedisICAOPrefixTaf      = "wx:icao:taf:"
 
-	DbRedisICAOLocFieldName         = "name"
-	DbRedisICAOLocFieldCity         = "city"
-	DbRedisICAOLocFieldCountryCode  = "country"
-	DbRedisICAOLocFieldLatitude     = "lat"
-	DbRedisICAOLocFieldLongitude    = "lon"
-	DbRedisICAOLocFieldAltitudeFeet = "alt_ft"
+	dbRedisICAOLocFieldName         = "name"
+	dbRedisICAOLocFieldCity         = "city"
+	dbRedisICAOLocFieldCountryCode  = "country"
+	dbRedisICAOLocFieldLatitude     = "lat"
+	dbRedisICAOLocFieldLongitude    = "lon"
+	dbRedisICAOLocFieldAltitudeFeet = "alt_ft"
 )
 
 // GetICAOLocationData retreives selected data fields for ICAO locations.
@@ -119,7 +119,7 @@ func (db *DbRedis) GetICAOLocationData(loc []string) ([]*DataICAOLocation, error
 	defer conn.Close()
 
 	for i, l := range loc {
-		v, err := redis.StringMap(conn.Do("HGETALL", DbRedisICAOPrefixLocation+l))
+		v, err := redis.StringMap(conn.Do("HGETALL", dbRedisICAOPrefixLocation+l))
 		if err != nil {
 			return make([]*DataICAOLocation, 0), err
 		}
@@ -209,7 +209,7 @@ func (db *DbRedis) GetMETARsTAFs(loc []string) ([]*DataICAOLocation, error) {
 func (db *DbRedis) LocationExists(loc string) (bool, error) {
 	conn := db.pool.Get()
 	defer conn.Close()
-	result, err := redis.Bool(conn.Do("EXISTS", DbRedisICAOPrefixLocation+loc))
+	result, err := redis.Bool(conn.Do("EXISTS", dbRedisICAOPrefixLocation+loc))
 	return result, err
 }
 
@@ -218,19 +218,19 @@ func (db *DbRedis) LocationExists(loc string) (bool, error) {
 func (db *DbRedis) SetDataICAOLocation(data *DataICAOLocation) error {
 	conn := db.pool.Get()
 	defer conn.Close()
-	exists, err := redis.Bool(conn.Do("EXISTS", DbRedisICAOPrefixLocation+data.Location))
+	exists, err := redis.Bool(conn.Do("EXISTS", dbRedisICAOPrefixLocation+data.Location))
 	if err != nil {
 		return fmt.Errorf("EXISTS command returned error: %s", err.Error())
 	}
 	if !exists {
 		_, err := conn.Do("HSET",
-			DbRedisICAOPrefixLocation+data.Location,
-			DbRedisICAOLocFieldName, data.Name,
-			DbRedisICAOLocFieldCity, data.City,
-			DbRedisICAOLocFieldCountryCode, data.CountryCode,
-			DbRedisICAOLocFieldLatitude, data.Latitude,
-			DbRedisICAOLocFieldLongitude, data.Longitude,
-			DbRedisICAOLocFieldAltitudeFeet, data.AltitudeFeet,
+			dbRedisICAOPrefixLocation+data.Location,
+			dbRedisICAOLocFieldName, data.Name,
+			dbRedisICAOLocFieldCity, data.City,
+			dbRedisICAOLocFieldCountryCode, data.CountryCode,
+			dbRedisICAOLocFieldLatitude, data.Latitude,
+			dbRedisICAOLocFieldLongitude, data.Longitude,
+			dbRedisICAOLocFieldAltitudeFeet, data.AltitudeFeet,
 		)
 		return err
 	}
@@ -242,7 +242,7 @@ func (db *DbRedis) SetDataICAOLocation(data *DataICAOLocation) error {
 func (db *DbRedis) SetMETAR(loc string, metar string, expire int64) error {
 	conn := db.pool.Get()
 	defer conn.Close()
-	_, err := conn.Do("SET", DbRedisICAOPrefixMetar+loc, metar, "EX", expire)
+	_, err := conn.Do("SET", dbRedisICAOPrefixMetar+loc, metar, "EX", expire)
 	return err
 }
 
@@ -251,28 +251,28 @@ func (db *DbRedis) SetMETAR(loc string, metar string, expire int64) error {
 func (db *DbRedis) SetTAF(loc string, taf string, expire int64) error {
 	conn := db.pool.Get()
 	defer conn.Close()
-	_, err := conn.Do("SET", DbRedisICAOPrefixTaf+loc, taf, "EX", expire)
+	_, err := conn.Do("SET", dbRedisICAOPrefixTaf+loc, taf, "EX", expire)
 	return err
 }
 
 func (db *DbRedis) makeLocationData(loc string, s map[string]string) (*DataICAOLocation, error) {
 	var l DataICAOLocation
-	alt, err := strconv.Atoi(s[DbRedisICAOLocFieldAltitudeFeet])
+	alt, err := strconv.Atoi(s[dbRedisICAOLocFieldAltitudeFeet])
 	if err != nil {
 		return &l, err
 	}
-	lat, err := strconv.ParseFloat(s[DbRedisICAOLocFieldLatitude], 64)
+	lat, err := strconv.ParseFloat(s[dbRedisICAOLocFieldLatitude], 64)
 	if err != nil {
 		return &l, err
 	}
-	lon, err := strconv.ParseFloat(s[DbRedisICAOLocFieldLongitude], 64)
+	lon, err := strconv.ParseFloat(s[dbRedisICAOLocFieldLongitude], 64)
 	if err != nil {
 		return &l, err
 	}
 	l.Location = loc
-	l.Name = s[DbRedisICAOLocFieldName]
-	l.City = s[DbRedisICAOLocFieldCity]
-	l.CountryCode = s[DbRedisICAOLocFieldCountryCode]
+	l.Name = s[dbRedisICAOLocFieldName]
+	l.City = s[dbRedisICAOLocFieldCity]
+	l.CountryCode = s[dbRedisICAOLocFieldCountryCode]
 	l.AltitudeFeet = alt
 	l.AltitudeMeters = int(alt * 3048 / 10000)
 	l.Latitude = lat
@@ -285,7 +285,7 @@ func (db *DbRedis) getMetarStrs(loc []string) ([]string, error) {
 	defer conn.Close()
 	var li []interface{}
 	for _, l := range loc {
-		li = append(li, DbRedisICAOPrefixMetar+l)
+		li = append(li, dbRedisICAOPrefixMetar+l)
 	}
 	return redis.Strings(conn.Do("MGET", li...))
 }
@@ -295,7 +295,7 @@ func (db *DbRedis) getTafStrs(loc []string) ([]string, error) {
 	defer conn.Close()
 	var li []interface{}
 	for _, l := range loc {
-		li = append(li, DbRedisICAOPrefixTaf+l)
+		li = append(li, dbRedisICAOPrefixTaf+l)
 	}
 	return redis.Strings(conn.Do("MGET", li...))
 }

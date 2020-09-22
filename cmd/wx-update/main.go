@@ -61,5 +61,6 @@ func main() {
 			wxupdate.UpdateTafs(&context)
 		}, 1*time.Minute)
 	for {
+		select {}
 	}
 }
